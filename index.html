@@ -22,10 +22,11 @@
         .history-list { flex: 1; overflow-y: auto; padding: 10px; }
         .history-item { padding: 12px 15px; border-radius: 12px; margin-bottom: 5px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: var(--text-main); transition: background 0.2s; }
         .history-item:hover, .history-item.active { background: rgba(104, 92, 255, 0.1); color: var(--primary); }
-        .history-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+        
+        /* 💡 增加历史记录显示的宽度，防止字数变多后挤压按钮 */
+        .history-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
         .history-actions i { margin-left: 10px; font-size: 13px; opacity: 0.5; transition: opacity 0.2s; } .history-actions i:hover { opacity: 1; color: var(--primary); }
         
-        /* 底部信息优化居中 */
         .sidebar-footer { padding: 15px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
         .footer-btn-row { display: flex; gap: 8px; width: 100%; }
         .sidebar-pill-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; padding: 8px 10px; border-radius: 20px; background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main); font-size: 12px; font-weight: 500; transition: all 0.2s ease; white-space: nowrap; }
@@ -39,11 +40,8 @@
         .header { height: 55px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--bg-card); flex-shrink: 0; z-index: 10; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .toggle-btn { font-size: 18px; cursor: pointer; color: var(--text-main); padding: 6px 10px; border-radius: 8px; transition: background 0.2s, color 0.2s; } .toggle-btn:hover { color: var(--primary); background: rgba(104, 92, 255, 0.1); }
-        
-        /* 顶部 Logo 改为 Rachel，支持点击回首页 */
         .logo { font-size: 20px; font-weight: bold; background: var(--primary-gradient); -webkit-background-clip: text; color: transparent; cursor: pointer; transition: opacity 0.2s; }
         .logo:hover { opacity: 0.8; }
-        
         .header-actions { display: flex; gap: 18px; align-items: center; }
         .icon-btn-wrapper { display: flex; align-items: center; cursor: pointer; color: var(--text-sub); font-size: 18px; transition: 0.2s; } .icon-btn-wrapper:hover { color: var(--primary); }
 
@@ -85,10 +83,10 @@
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
         .modal-content { background: var(--bg-card); padding: 25px; border-radius: 20px; width: 100%; max-width: 420px; position: relative; box-shadow: var(--shadow); }
         .close-modal { position: absolute; top: 18px; right: 20px; font-size: 20px; cursor: pointer; color: var(--text-sub); }
-        .form-group { margin: 15px 0; }
-        .form-group label { display: block; font-size: 13px; color: var(--text-sub); margin-bottom: 6px; }
+        .form-group { margin: 15px 0; } .form-group label { display: block; font-size: 13px; color: var(--text-sub); margin-bottom: 6px; }
         .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; outline: none; background: var(--input-bg); color: var(--text-main); font-size: 14px; box-sizing: border-box;}
         .btn-submit { width: 100%; padding: 12px; background: var(--primary-gradient); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .auth-tip { font-size: 12px; color: #e74c3c; margin-top: 5px; display: none; }
         .privacy-body { max-height: 260px; overflow-y: auto; font-size: 13px; line-height: 1.6; color: var(--text-main); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 12px 0; margin: 15px 0; }
     </style>
 </head>
@@ -96,6 +94,7 @@
 <body>
     <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
+    <!-- 左侧抽屉 -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <button class="btn-new-chat" onclick="startNewChat()"><i class="fas fa-plus"></i> 开启新对话</button>
@@ -103,27 +102,29 @@
         <div class="history-list" id="history-list"></div>
         
         <div class="sidebar-footer">
+            <!-- 💡 要求2：使用说明和隐私协议各占一行 -->
             <div class="footer-btn-row">
                 <div class="sidebar-pill-btn" onclick="openModal('guide-modal')"><i class="fas fa-book"></i><span>使用说明</span></div>
-                <div class="sidebar-pill-btn" onclick="openModal('privacy-modal')"><i class="fas fa-shield-alt"></i><span>隐私协议</span></div>
             </div>
             <div class="footer-btn-row">
-                <div class="sidebar-pill-btn" onclick="openModal('profile-modal')"><i class="fas fa-user"></i><span>专属档案</span></div>
-                <div class="sidebar-pill-btn" onclick="openModal('settings-modal')"><i class="fas fa-key"></i><span>授权码</span></div>
+                <div class="sidebar-pill-btn" onclick="openModal('privacy-modal')"><i class="fas fa-shield-alt"></i><span>隐私协议</span></div>
             </div>
+            <!-- 💡 要求3：白天模式和清空缓存各一半对称放置 -->
             <div class="footer-btn-row">
                 <div class="sidebar-pill-btn" onclick="cycleTheme()" title="切换: 白天 / 黄昏 / 夜间"><i class="fas fa-sun" id="theme-icon"></i><span id="theme-text">白天模式</span></div>
                 <div class="sidebar-pill-btn danger" onclick="clearAllCache()" title="清空聊天记录与本地缓存"><i class="fas fa-trash-alt"></i><span>清空缓存</span></div>
             </div>
             
             <div class="studio-brand-info">
-                <span>瑞秋工作室出品</span>
+                <!-- 💡 要求4：联系微信上移到瑞秋工作室出品之前 -->
                 <span>联系微信： RachelStudio2025</span>
+                <span>瑞秋工作室出品</span>
                 <div class="icp-info" id="icp-info"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">京ICP备XXXXXXXX号-1</a></div>
             </div>
         </div>
     </div>
 
+    <!-- 主界面 -->
     <div class="main-container welcome-state" id="main-container">
         <div class="header">
             <div class="header-left">
@@ -137,7 +138,7 @@
         </div>
 
         <div class="chat-area" id="chat-box">
-            <div class="welcome-hero" id="welcome-hero"><h1>让 AI 创造更多可能</h1><p>基于智能体网络，帮助您快速完成分析、解答与创作</p></div>
+            <!-- 首页内容由 JavaScript 动态生成，确保全局统一 -->
         </div>
 
         <div class="input-container">
@@ -156,32 +157,39 @@
         </div>
     </div>
 
+    <!-- 用户档案弹窗 -->
     <div class="modal" id="profile-modal">
         <div class="modal-content"><span class="close-modal" onclick="closeModal('profile-modal')">&times;</span><h3 style="margin-bottom: 5px;">👤 用户专属档案</h3><p style="font-size: 12px; color: var(--text-sub);">完善您的背景信息（可选项），AI 将结合您的派系与定位提供更精准的回答。</p><div class="form-group"><label>从业年限 (请输入纯数字)</label><input type="number" id="user_years" class="form-control" placeholder="如填: 3" min="0" step="1"></div><div class="form-group"><label>你的技法（派系）</label><input type="text" id="user_school" class="form-control" placeholder="例如：精神分析 / CBT / 拉康派"></div><div class="form-group"><label>定位（人群 * 问题）</label><input type="text" id="user_positioning" class="form-control" placeholder="例如：青少年情绪问题 / 职场焦虑排解"></div><div class="form-group"><label>其他补充说明</label><textarea id="user_notes" class="form-control" rows="2" placeholder="例如：希望回答风格更严谨..."></textarea></div><button class="btn-submit" onclick="saveUserProfile()">保存档案</button></div>
     </div>
 
+    <!-- 授权码弹窗 -->
     <div class="modal" id="settings-modal">
         <div class="modal-content"><span class="close-modal" onclick="closeModal('settings-modal')">&times;</span><h3 style="margin-bottom: 5px;">🔑 身份授权</h3><p style="font-size: 13px; color: var(--text-sub);">请输入您的 VIP 授权码以解锁所有 AI 服务</p><div class="form-group"><label>授权码 (Auth Code)</label><input type="text" id="auth_code" class="form-control" placeholder="请输入您的授权码"><div class="auth-tip" id="auth-tip">⚠️ 请先输入有效的授权码才能继续使用！</div></div><button class="btn-submit" onclick="saveConfig()">保存并体验</button></div>
     </div>
 
+    <!-- 使用说明弹窗 -->
     <div class="modal" id="guide-modal" style="z-index: 3000;">
-        <div class="modal-content" style="max-width: 460px;"><span class="close-modal" onclick="closeModal('guide-modal')">&times;</span><h3 style="margin-bottom: 5px; font-size: 18px;">📖 使用说明</h3><div class="privacy-body"><p><strong>欢迎使用 Rachel 智能助手！</strong></p><br><p><strong>1. 如何开始：</strong><br>请点击侧边栏的“授权码”填入您的 VIP 授权码，然后点击底部任意模块开始提问。</p><br><p><strong>2. 专属定制：</strong><br>在“专属档案”中填入您的背景信息，AI 的回答将更符合您的风格与定位。</p><br><p><strong>3. 模式切换：</strong><br>底部拥有 5 大专属 AI 引擎，点击切换将自动存档当前对话，并为您准备好全新的沟通界面。</p><br><p><strong>💡 提示：您可以在这里自定义修改任何内容说明。</strong></p></div><button class="btn-submit" onclick="closeModal('guide-modal')">我知道了</button></div>
+        <div class="modal-content" style="max-width: 460px;"><span class="close-modal" onclick="closeModal('guide-modal')">&times;</span><h3 style="margin-bottom: 5px; font-size: 18px;">📖 使用说明</h3><div class="privacy-body"><p><strong>欢迎使用 Rachel 智能助手！</strong></p><br><p><strong>1. 如何开始：</strong><br>请点击顶部的“钥匙”图标填入您的 VIP 授权码，然后即可开始提问。</p><br><p><strong>2. 专属定制：</strong><br>在“专属档案”中填入您的背景信息，AI 的回答将更符合您的风格与定位。</p><br><p><strong>3. 模式切换：</strong><br>底部拥有 5 大专属 AI 引擎，点击切换将自动存档当前对话，并为您准备好全新的沟通界面。</p><br><p><strong>💡 提示：本内容仅供内部测试说明，可随时修改。</strong></p></div><button class="btn-submit" onclick="closeModal('guide-modal')">我知道了</button></div>
     </div>
 
+    <!-- 用户隐私协议弹窗 -->
     <div class="modal" id="privacy-modal" style="z-index: 3000;">
         <div class="modal-content" style="max-width: 460px;"><span class="close-modal" onclick="closeModal('privacy-modal')">&times;</span><h3 style="margin-bottom: 5px; font-size: 18px;">📋 服务与隐私协议</h3><div class="privacy-body"><p><strong>1. 数据安全与隐私保护：</strong></p><p>本系统尊重并保护您的个人隐私。您填写的 VIP 授权码以及个人档案信息均仅保存在您的本地浏览器中，绝不会未经许可泄漏给第三方。</p><br><p><strong>2. AI 内容生成免责声明：</strong></p><p>本服务基于大语言模型构建，AI 提供的回答与案例分析仅供学习参考与辅助创作，不构成医疗临床诊断、法律或财务投资依据。</p><br><p><strong>3. 合规使用规范：</strong></p><p>严禁利用本工具传输或生成任何违反法律法规、危害国家安全或侵犯他人合法权益的内容。</p></div><button class="btn-submit" onclick="agreePrivacy()">同意并继续</button></div>
     </div>
 
     <script>
         const CONFIG = {
-            // 🚨 你的后台管家地址 🚨
-            WORKER_URL: 'https://api.rachel-group.com', 
-            
+            // 后台管家地址
+            WORKER_URL: 'https://ra.huaged.com', 
             AI_AVATAR: './avatar.png',               
             USER_AVATAR: './user.png',
             SHOW_ICP: true,
             ENABLE_PRIVACY_MODAL: true    
         };
+
+        // 💡 要求5：统一管理首页欢迎标语（在此处修改即可全局生效）
+        const WELCOME_TITLE = "让 AI 创造更多可能";
+        const WELCOME_DESC = "基于智能体网络，帮助您快速完成分析、解答与创作";
 
         const THEMES = ['light', 'dusk', 'dark']; 
         let currentConvId = "";
@@ -190,10 +198,21 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             loadConfig(); loadUserProfile(); renderHistory(); initTheme(); checkPrivacyPolicy();
+            // 初始化时载入统一的欢迎界面
+            renderWelcomeHero();
             document.getElementById('user_input').addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 768) { e.preventDefault(); sendMessage(); }
             });
         });
+
+        // 渲染欢迎页面
+        function renderWelcomeHero() {
+            document.getElementById('chat-box').innerHTML = `
+                <div class="welcome-hero" id="welcome-hero">
+                    <h1>${WELCOME_TITLE}</h1>
+                    <p>${WELCOME_DESC}</p>
+                </div>`;
+        }
 
         function initTheme() { setTheme(localStorage.getItem('nova_theme') || 'light'); }
         function cycleTheme() { setTheme(THEMES[(THEMES.indexOf(document.documentElement.getAttribute('data-theme') || 'light') + 1) % THEMES.length]); }
@@ -252,7 +271,7 @@
 
         function startNewChat() {
             currentConvId = ""; document.getElementById('main-container').classList.add('welcome-state');
-            document.getElementById('chat-box').innerHTML = `<div class="welcome-hero" id="welcome-hero"><h1>让 AI 创造更多可能</h1><p>基于智能体网络，帮助您快速完成分析、解答与创作</p></div>`;
+            renderWelcomeHero();
             closeSidebar(); renderHistory();
         }
 
@@ -268,7 +287,8 @@
         }
 
         function updateChatList(id, firstMsg) {
-            const title = firstMsg.substring(0, 15) + "...";
+            // 💡 要求6：左侧历史记录提取更多字数 (从15个字改到25个字)
+            const title = firstMsg.substring(0, 25) + (firstMsg.length > 25 ? "..." : "");
             if (!chatList.find(c => c.id === id)) { chatList.unshift({ id, title }); localStorage.setItem('nova_chat_list', JSON.stringify(chatList)); renderHistory(); }
         }
 
@@ -284,7 +304,7 @@
         async function sendMessage() {
             const input = document.getElementById('user_input'); const text = input.value.trim(); if (!text) return;
             const auth = localStorage.getItem('nova_auth');
-            if (!auth) { document.getElementById('auth-tip').style.display = 'block'; openModal('settings-modal'); return; }
+            if (!auth) { openModal('settings-modal'); return; }
 
             input.blur(); input.value = ''; input.style.height = 'auto';
             const mainContainer = document.getElementById('main-container');
