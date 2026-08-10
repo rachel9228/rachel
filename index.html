@@ -146,7 +146,7 @@
             
             <!-- 需求4: 联系微信在“瑞秋工作室出品”上方 -->
             <div class="studio-brand-info">
-                <span>联系微信： RachelStudio2025</span>
+                <span>联系微信：peipeitarot</span>
                 <span>瑞秋工作室出品</span>
                 <div class="icp-info" id="icp-info"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">京ICP备XXXXXXXX号-1</a></div>
             </div>
@@ -168,8 +168,8 @@
 
         <div class="chat-area" id="chat-box">
             <div class="welcome-hero" id="welcome-hero">
-                <h1 id="hero-title">让 AI 创造更多可能</h1>
-                <p id="hero-subtitle">基于智能体网络，帮助您快速完成分析、解答与创作</p>
+                <h1 id="hero-title">瑞秋·5维 操盘系统</h1>
+                <p id="hero-subtitle">用AI赋能商业 助力你活出一人公司的小而美事业</p>
             </div>
         </div>
 
@@ -216,8 +216,8 @@
             ENABLE_PRIVACY_MODAL: true,
 
             // 需求5: 首页标语在此统一自定义修改
-            WELCOME_TITLE: '让 AI 创造更多可能',
-            WELCOME_SUBTITLE: '基于智能体网络，帮助您快速完成分析、解答与创作'
+            WELCOME_TITLE: '瑞秋·5维 操盘系统',
+            WELCOME_SUBTITLE: '用AI赋能商业，助力你活出一人公司的小而美事业'
         };
 
         const THEMES = ['light', 'dusk', 'dark']; 
@@ -414,7 +414,7 @@
             try {
                 let baseUrl = CONFIG.WORKER_URL;
                 if(baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
-                
+                 
                 await fetch(`${baseUrl}/messages/${msgId}/feedbacks`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ rating: rating, user: userId })
